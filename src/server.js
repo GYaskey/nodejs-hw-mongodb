@@ -13,10 +13,9 @@ const PORT = Number(env('PORT', '3000'));
 export const startServer = () => {
   const app = express();
 
-  app.use(express.json());
   app.use(cors());
-
   app.use(logger);
+  app.use(express.json());
 
   app.get('/', (req, res) => {
     res.json({
