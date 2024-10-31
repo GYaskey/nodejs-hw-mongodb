@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import router from './routes/index.js';
-
 import { env } from './utils/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -16,6 +16,7 @@ export const startServer = () => {
   app.use(cors());
   app.use(logger);
   app.use(express.json());
+  app.use(cookieParser());
 
   app.get('/', (req, res) => {
     res.json({

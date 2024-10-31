@@ -1,7 +1,13 @@
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
+import { randomBytes } from 'crypto';
 
 import { UsersCollection } from '../db/models/user.js';
+import SessionCollection from '../db/models/session.js';
+import {
+  accessTokenLifetime,
+  refreshTokenLifetime,
+} from '../constants/users.js';
 
 export const registerUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
@@ -23,4 +29,17 @@ export const loginUser = async (payload) => {
   const isEqual = await bcrypt.compare(payload.password, user.password);
 
   if (!isEqual) throw createHttpError(401, 'Unauthorized');
+
+  await SessionCollection.deleteOne({ userId: user._id });
+
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+
+  return await SessionCollection.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: Date.now() + accessTokenLifetime,
+    refreshTokenValidUntil: Date.now() + refreshTokenLifetime,
+  });
 };
