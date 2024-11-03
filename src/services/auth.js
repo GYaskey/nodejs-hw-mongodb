@@ -113,13 +113,10 @@ export const requestResetToken = async (email) => {
     TEMPLATES_DIR,
     'reset-password-email.html',
   );
-
   const templateSource = (
     await fs.readFile(resetPasswordTemplatePath)
   ).toString();
-
   const template = handlebars.compile(templateSource);
-
   const html = template({
     name: user.name,
     link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
@@ -137,7 +134,9 @@ export const resetPassword = async (payload) => {
   let entries;
 
   try {
-    entries = jwt.verify(payload.token, env('JWT_SECRET'));
+    entries = jwt.verify(payload.token, env('JWT_SECRET'), {
+      expiresIn: '24h',
+    });
   } catch (error) {
     if (error instanceof Error) {
       throw createHttpError(401, error.message);
