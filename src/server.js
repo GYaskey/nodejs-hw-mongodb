@@ -14,7 +14,7 @@ export const startServer = () => {
   const app = express();
 
   app.use(cors());
-  app.use(logger);
+  // app.use(logger);
   app.use(express.json());
   app.use(cookieParser());
 
